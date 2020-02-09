@@ -11,6 +11,7 @@ from datetime import datetime
 @login_required
 def index():
     user = {'username': 'Armand'}
+    group = {'groupname': 'Group01'}
     posts = [
         {
             'author': {'username': 'John'},
