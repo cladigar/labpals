@@ -1,8 +1,8 @@
-from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from labpals import app, db
+from labpals.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, login_required, logout_user
-from app.models import User
+from labpals.models import User
 from werkzeug.urls import url_parse
 from datetime import datetime
 
@@ -22,6 +22,7 @@ def index():
         }
     ]
     return render_template('index.html', title='Home Page', posts=posts)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -38,6 +39,7 @@ def login():
             next_page = url_for('index')
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -55,6 +57,7 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
 @app.route('/user/<username>')
 @login_required
 def user(username):
