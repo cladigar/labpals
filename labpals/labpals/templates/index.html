@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h1>Hi, {{ current_user.username }}!</h1>
+	<!-- <h1>Hi, {{ current_user.username }}!</h1> -->
+	<h1>{{ group.name }}</h1>
+    <h2>Contact details:</h2>
+    <p><div><strong>Location: </strong>{{ group.location }}</div>
+    <div><strong>E-mail: </strong>{{ group.email }}</div>
+    <div><strong>Website: </strong>{{ group.website }}</div></p>
+
 	{% for post in posts %}
-	<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+	<div><p>{{ post.author.username }} added: <b>{{ post.body }}</b></p></div>
 	{% endfor %}
 {% endblock %}
