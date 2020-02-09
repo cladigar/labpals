@@ -2,11 +2,11 @@
 
 {% block content %}
 	<!-- <h1>Hi, {{ current_user.username }}!</h1> -->
-	<h1>{{ groupname }}</h1>
+	<h1>{{ Group.name }}</h1>
     <h2>Contact details:</h2>
-    <p><div><strong>Location: </strong>{{ location }}</div>
-    <div><strong>E-mail: </strong>{{ email }}</div>
-    <div><strong>Website: </strong>{{ website }}</div></p>
+    <p><div><strong>Location: </strong>{{ Group.location }}</div>
+    <div><strong>E-mail: </strong>{{ Group.email }}</div>
+    <div><strong>Website: </strong>{{ Group.website }}</div></p>
 
 	{% for post in posts %}
 	<div><p>{{ post.author.username }} added: <b>{{ post.body }}</b></p></div>
