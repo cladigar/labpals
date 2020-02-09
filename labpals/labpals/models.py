@@ -1,8 +1,7 @@
 from hashlib import md5
-from app import login
+from labpals import login, db
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from app import db
 from flask_login import UserMixin
 
 @login.user_loader
