@@ -11,7 +11,10 @@ from datetime import datetime
 @login_required
 def index():
     user = {'username': 'Armand'}
-    group = {'groupname': 'Group01'}
+    group = {'name': 'Group01',
+            'location': 'Barcelona, Spain',
+            'email': 'group01@gmail.com',
+            'website': 'group01@labpals.com'}
     posts = [
         {
             'author': {'username': 'John'},
@@ -22,7 +25,7 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
     ]
-    return render_template('index.html', title='Home Page', posts=posts)
+    return render_template('index.html', title='Home Page', group=group, posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
