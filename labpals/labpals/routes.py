@@ -1,9 +1,11 @@
+import os
 from labpals import app, db
-from labpals.forms import LoginForm, RegistrationForm, EditProfileForm
-from flask import render_template, flash, redirect, url_for, request
+from labpals.forms import LoginForm, RegistrationForm, EditProfileForm, UploadForm
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import current_user, login_user, login_required, logout_user
-from labpals.models import User
+from labpals.models import User, Result
 from werkzeug.urls import url_parse
+from werkzeug import secure_filename
 from datetime import datetime
 
 @app.route('/')
@@ -87,3 +89,40 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+def allowed_file(filename):
+    return '.' in filename and filename.lower().rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/upload', methods=['GET', 'POST'])
+@login_required
+def upload():
+    form = UploadForm(csrf_enabled=False)
+    if form.validate_on_submit():
+        file = form.file.data
+        if allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        name, extension = os.path.splitext(filename)
+        result = Result(content=os.path.join(app.config['UPLOAD_FOLDER'], filename), filetype=extension, group_id='LabPals', user_id=current_user.username)
+        db.session.add(result)
+        db.session.commit()
+        flash('The file has been uploaded')
+        return redirect(url_for('upload'))
+    if form.errors:
+        flash(form.errors, 'Danger')
+    return render_template('upload.html', title="Upload File", form=form)
+
+@app.route('/files')
+@login_required
+def show_files():
+    files = Result.query.all()
+    return render_template('files.html', title="Existent Files", files=files)
+
+@app.route('/files/<pdf_id>')
+@login_required
+def download_pdf(pdf_id):
+    filename = f'{pdf_id}.pdf'
+    try:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)

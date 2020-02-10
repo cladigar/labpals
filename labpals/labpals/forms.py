@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from flask_wtf.file import FileRequired
 from labpals.models import User
 
 class LoginForm(FlaskForm):
@@ -30,3 +31,7 @@ class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
     submit = SubmitField('Submit')
+
+class UploadForm(FlaskForm):
+    file = FileField('Upload File', validators=[FileRequired()])
+    submit = SubmitField('Upload')
