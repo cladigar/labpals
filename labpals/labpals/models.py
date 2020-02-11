@@ -38,3 +38,33 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
+class Result(db.Model):
+    #Defining data attributes for the results class
+    #File content indexed as it is predicted most common search
+    id = db.Column(db.Integer, primary_key=True)
+    filetype = db.Column(db.String(45))
+    content = db.Column(db.String(255), index=True)
+    date_upload = db.Column(db.DateTime, default=datetime.utcnow)
+    date_modif = db.Column(db.DateTime, default=datetime.utcnow)
+    # Linking results class to IDs of groups and users
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #Printing out the file type and date uploaded (used for python interpreter)
+    def __repr__(self):
+        return '<File Type {}>'.format(self.filetype)
+        return '<Date Uploaded {}>'.format(self.date_upload)
+
+class Group(db.Model):
+    #Defining data attributes for group class
+    #Groupname indexed as it is prediceted most common search
+    id = db.Column(db.Integer, primary_key=True)
+    groupname = db.Column(db.String(255), index=True)
+    location = db.Column(db.String(255))
+    email = db.Column(db.String(255))
+    website = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #Printing out the name and location of the group (used for python interpreter)
+    def __repr__(self):
+        return '<User {}>'.format(self.groupname)
+        return '<Location {}>'.format(self.location)
