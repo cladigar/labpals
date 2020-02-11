@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
-from flas_wtf.file import FileRequired
+from flask_wtf.file import FileRequired
 from labpals.models import User
 
 class LoginForm(FlaskForm):
