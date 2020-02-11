@@ -1,7 +1,7 @@
 import os
 from labpals import app, db
-from labpals.forms import LoginForm, RegistrationForm, EditProfileForm
-from flask import render_template, flash, redirect, url_for, request
+from labpals.forms import LoginForm, RegistrationForm, EditProfileForm, UploadForm
+from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import current_user, login_user, login_required, logout_user
 from labpals.models import User, Result
 from werkzeug.urls import url_parse
