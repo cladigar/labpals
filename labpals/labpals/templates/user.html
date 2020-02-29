@@ -1,21 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<!--Button to edit profile-->
 	{% if user == current_user %}
-	<p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+	<div class="float-right m-5">
+		<button type="button" class="btn btn-outline-secondary">
+			<a href="{{ url_for('edit_profile') }}">Edit your profile</a>
+		</button>
+	</div>
 	{% endif %}
-	<table>
-		<tr valign="top">
-			<td><img src="{{ user.avatar(128) }}"></td>
-			<td>
-				<h1>User: {{ user.username }}</h1>
-				{% if user.about_me %}<p>{{ user.about_me }}</p>{% endif%}
-				{% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
-			</td>
-		</tr>
-	</table>
+
+<!--User info-->
+	<div class="container clearfix m-5">
+		<img class="float-left mr-5" src="{{ user.avatar(128) }}">
+		<h1>{{ user.username }}</h1>
+		{% if user.about_me %}<p>{{ user.about_me }}</p>{% endif%}
+		{% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
+	</div>
 	<hr>
-	{% for post in posts %}
-		{% include '_post.html' %}
-	{% endfor %}
+	<br>
+	<div class="container-fluid ml-4">
+		{% for post in posts %}
+			{% include '_post.html' %}
+		<br>
+		{% endfor %}
+	</div>
+
 {% endblock %}

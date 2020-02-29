@@ -1,8 +1,42 @@
 {% extends "base.html" %}
 
-{% block content %}
-	<h1>Hi, {{ current_user.username }}!</h1>
+	<!--
+	<h1>{{ group.name }}</h1>
+    <h2>Contact details:</h2>
+    <p><div><strong>Location: </strong>{{ group.location }}</div>
+    <div><strong>E-mail: </strong>{{ group.email }}</div>
+    <div><strong>Website: </strong>{{ group.website }}</div></p>
+
 	{% for post in posts %}
-	<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+	<div><p>{{ post.author.username }} added: <b>{{ post.body }}</b></p></div>
 	{% endfor %}
+
+-->
+
+{% block content %}
+
+<!--Header for the group-->
+	<div class="container text-center">
+		<h1 class="display-3 p-5">Group name</h1>
+	</div>
+
+<!--Content for the group-->
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="jumbotron" style="border-radius:10px">
+					<h1 class="text-center">Contact details</h1>
+					<p class="font-weight-bold">Location:</p><p>Barcelona, Spain</p>
+					<p class="font-weight-bold">E-mail:</p><p>group01@gmail.com</p>
+					<p class="font-weight-bold">Website:</p><p>group01@labpals.com</p>
+				</div>
+			</div>
+			<div class="col-sm-8">
+				<div class="jumbotron" style="border-radius:10px">
+					<p>John added:</p><p class="font-weight-bold">Beautiful day in Barcelona!</p>
+					<p>Susan added:</p><p class="font-weight-bold">The Avengers movie was so cool!</p>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}

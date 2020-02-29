@@ -103,7 +103,7 @@ def upload():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         name, extension = os.path.splitext(filename)
-        result = Result(content=os.path.join(app.config['UPLOAD_FOLDER'], filename), filetype=extension, group_id='LabPals', user_id=current_user.username)
+        result = Result(content=os.path.join(app.config['UPLOAD_FOLDER'], filename), filetype=extension, group_id=name, user_id=current_user.username)
         db.session.add(result)
         db.session.commit()
         flash('The file has been uploaded')
