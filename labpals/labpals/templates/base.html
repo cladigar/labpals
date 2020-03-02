@@ -7,12 +7,19 @@
 		{% else %}
 		<title>Welcome to Labpals</title>
 		{% endif %}
+		<!-- Javascript Script for making the time more eye-friendly -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 		<!-- Latest bootstrap compiled and minified -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+		<!-- Stylesheet for making the datables prettier -->
+		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+		<!-- Scripts for making the datatables more pretty -->
+		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 	</head>
 
 	<body class="bg-light">
-		
+
 		<!--Header-->
 		<div class="jumbotron jumbotron-fluid text-center bg-secondary text-white" style="margin-bottom:0">
       <div class="container">
@@ -30,6 +37,7 @@
 				{% else %}
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('user', username=current_user.username) }}">Profile</a></li>
 				<li class="nav-item"><a class="nav-link" href="{{url_for('upload') }}">Upload file</a></li>
+				<li class="nav-item"><a class="nav-link" href="{{url_for('show_files') }}">Files</a></li>
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
 				{% endif %}
 			</ul>
@@ -45,5 +53,7 @@
 		{% endwith %}
 
 		{% block content %}{% endblock %}
+
+
 	</body>
 </html>

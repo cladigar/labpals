@@ -103,10 +103,10 @@ def upload():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         name, extension = os.path.splitext(filename)
-        result = Result(content=os.path.join(app.config['UPLOAD_FOLDER'], filename), filetype=extension, group_id=name, user_id=current_user.username)
+        result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], filename), group_id='none_yet', user_id=current_user.id)
         db.session.add(result)
         db.session.commit()
-        flash('The file has been uploaded')
+        flash('The file has been succesfully uploaded')
         return redirect(url_for('upload'))
     if form.errors:
         flash(form.errors, 'Danger')
@@ -115,7 +115,8 @@ def upload():
 @app.route('/files')
 @login_required
 def show_files():
-    files = Result.query.all()
+    user = User.query.get(current_user.id)
+    files = user.results.all()
     return render_template('files.html', title="Existent Files", files=files)
 
 @app.route('/files/<pdf_id>')
@@ -124,5 +125,14 @@ def download_pdf(pdf_id):
     filename = f'{pdf_id}.pdf'
     try:
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
+@app.route('/files/view/<pdf_id>')
+@login_required
+def view_pdf(pdf_id):
+    filename = f'{pdf_id}.pdf'
+    try:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)

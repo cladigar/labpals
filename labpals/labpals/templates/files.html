@@ -2,7 +2,34 @@
 
 {% block content %}
   <h1>Existing Files</h1>
+  <table border="0" cellspacing="2" cellpadding="4" id="resultable">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Extension</th>
+        <th>Upload Date</th>
+        <th>Last Modification Date</th>
+        <th>Link</th>
+      </tr>
+    </thead>
   {% for file in files %}
-    {{ file.group_id }}
+    <tbody>
+      <tr>
+        <td><td><a href="{{url_for('view_pdf', pdf_id=file.filename) }}">{{ file.filename }}</a></td>
+        <td>{{ file.filetype }}</td>
+        <td>{{ momentjs(file.date_upload).format('LL')}}</td>
+        <td>{{ momentjs(file.date_modif).format('LL') }}</td>
+        <td><a href="{{url_for('download_pdf', pdf_id=file.filename) }}">Download</a></td>
+      </tr>
+    </tbody>
   {% endfor %}
+  </table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#resultable').DataTable();
+    });
+</script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+
+
 {% endblock %}

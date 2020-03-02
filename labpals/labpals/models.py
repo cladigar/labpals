@@ -19,6 +19,9 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     #Linking user to corresponding group
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    #Making results from a user easily accesible by a SQLalchemy query
+    results = db.relationship('Result', backref='author', lazy='dynamic')
+
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -47,6 +50,7 @@ class Result(db.Model):
     #Defining data attributes for the results class
     #File content indexed as it is predicted most common search
     id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100))
     filetype = db.Column(db.String(45))
     content = db.Column(db.String(255), index=True)
     date_upload = db.Column(db.DateTime, default=datetime.utcnow)
