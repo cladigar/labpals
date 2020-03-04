@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Existing Files</h1>
+  <br>
+  <h1>Your files</h1>
+  <br>
   <table border="0" cellspacing="2" cellpadding="4" id="resultable">
     <thead>
       <tr>
@@ -15,7 +17,7 @@
   {% for file in files %}
     <tbody>
       <tr>
-        <td><td><a href="{{url_for('view_pdf', pdf_id=file.filename) }}">{{ file.filename }}</a></td>
+        <td><a href="{{url_for('view_pdf', pdf_id=file.filename) }}">{{ file.filename }}</a></td>
         <td>{{ file.filetype }}</td>
         <td>{{ momentjs(file.date_upload).format('LL')}}</td>
         <td>{{ momentjs(file.date_modif).format('LL') }}</td>
@@ -29,7 +31,7 @@
         $('#resultable').DataTable();
     });
 </script>
-    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
 
 {% endblock %}

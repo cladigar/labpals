@@ -7,15 +7,16 @@
 		{% else %}
 		<title>Welcome to Labpals</title>
 		{% endif %}
-		<!-- Javascript Script for making the time more eye-friendly -->
-		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 		<!-- Latest bootstrap compiled and minified -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 		<!-- Stylesheet for making the datables prettier -->
-		<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
+		<!-- Javascript Script for making the time more eye-friendly -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
 		<!-- Scripts for making the datatables more pretty -->
-		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.0.min.js"></script>
-		<script type="text/javascript" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+		<script src="https://code.jquery.com/jquery-2.2.0.min.js" integrity="sha256-ihAoc6M/JPfrIiIeayPE9xjin4UWjsx2mjW/rtmxLM4=" crossorigin="anonymous"></script>
 	</head>
 
 	<body class="bg-light">
@@ -41,6 +42,9 @@
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
 				{% endif %}
 			</ul>
+			{% if g.search_form %}
+      <form class="navbar-form navbar-left" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}</div></form>
+      {% endif %}
 		</nav>
 
 		<!--Warning messages-->

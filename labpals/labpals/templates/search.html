@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ ('Search Results') }}</h1>
+    <br>
+    <br>
+    <table border="0" cellspacing="2" cellpadding="4" id="resultable">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Contact</th>
+          <th>Last seen</th>
+          <th>Group</th>
+        </tr>
+      </thead>
+    {% for user in users %}
+      <tbody>
+        <tr>
+          <td><a href="{{url_for('user', username=user.username) }}">{{ user.username }}</a></td>
+          <td>{{ user.email }}</td>
+          <td>{{ momentjs(user.last_seen).format('LL')}}</td>
+          <td>To be implemented</td>
+        </tr>
+      </tbody>
+    {% endfor %}
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span>
+                    {{ ('Previous results') }}
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    {{ ('Next results') }}
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#resultable').DataTable();
+    });
+</script>
+
+{% endblock %}

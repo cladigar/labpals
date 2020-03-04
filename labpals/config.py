@@ -14,3 +14,5 @@ class Config(object):
     ADMINS = ['armandgonzalez1994@gmail.com']
     ALLOWED_EXTENSIONS = set(['pdf'])
     UPLOAD_FOLDER = os.path.join(basedir, 'labpals/uploads')
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+    ENTRIES_PER_PAGE = 10

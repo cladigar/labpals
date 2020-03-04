@@ -2,7 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from flask_wtf.file import FileRequired
-from labpals.models import User
+from labpals.models import User, Group
+from flask import request
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -10,7 +11,8 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
 
-class RegistrationForm(FlaskForm):
+class UserRegistrationForm(FlaskForm):
+    groupaffiliation= StringField('Group Affiliation')
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -35,3 +37,32 @@ class EditProfileForm(FlaskForm):
 class UploadForm(FlaskForm):
     file = FileField('Upload File', validators=[FileRequired()])
     submit = SubmitField('Upload')
+
+class SearchForm(FlaskForm):
+    q = StringField('Search', validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        if 'formdata' not in kwargs:
+            kwargs['formdata'] = request.args
+        if 'csrf_enabled' not in kwargs:
+            kwargs['csrf_enabled'] = False
+        super(SearchForm, self).__init__(*args, **kwargs)
+
+class GroupRegistrationForm(FlaskForm):
+    groupname = StringField('Group Name', validators=[DataRequired()])
+    researchcenter = StringField('Affiliated Research Center (University, etc.)', validators=[DataRequired()])
+    researchfield = StringField('Field of Research', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    website = StringField('Website')
+    submit = SubmitField('Register')
+
+    def validate_groupname(self, groupname):
+        name = Group.query.filter_by(groupname=groupname.data).first()
+        if name is not None:
+            raise ValidationError('Please use a different group name.')
+
+    def validate_email(self, email):
+        groupmail = Group.query.filter_by(email=email.data).first()
+        if groupmail is not None:
+            raise ValidationError('Please use a different email address.')
