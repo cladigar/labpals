@@ -9,12 +9,6 @@
 		{% endif %}
 		<!-- Latest bootstrap compiled and minified -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-<<<<<<< HEAD
-	</head>
-
-	<body class="bg-light">
-		
-=======
 		<!-- Stylesheet for making the datables prettier -->
 		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
 		<!-- Javascript Script for making the time more eye-friendly -->
@@ -27,7 +21,7 @@
 
 	<body class="bg-light">
 
->>>>>>> labpals_AGE
+
 		<!--Header-->
 		<div class="jumbotron jumbotron-fluid text-center bg-secondary text-white" style="margin-bottom:0">
       <div class="container">
@@ -44,11 +38,6 @@
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
 				{% else %}
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('user', username=current_user.username) }}">Profile</a></li>
-<<<<<<< HEAD
-				<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
-				{% endif %}
-			</ul>
-=======
 				<li class="nav-item"><a class="nav-link" href="{{url_for('upload') }}">Upload file</a></li>
 				<li class="nav-item"><a class="nav-link" href="{{url_for('show_files') }}">Files</a></li>
 				<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
@@ -57,7 +46,7 @@
 			{% if g.search_form %}
       <form class="form-inline ml-auto" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}</div></form>
       {% endif %}
->>>>>>> labpals_AGE
+
 		</nav>
 
 		<!--Warning messages-->
