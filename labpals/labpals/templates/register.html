@@ -5,15 +5,12 @@
 		<h1>Register</h1>
 		<form action="" method="post">
 			{{ form.hidden_tag() }}
-<<<<<<< HEAD
-=======
 			<p>Group name must match exact group name registered in the system.</p>
 			<p>
 				{{ form.groupaffiliation.label }}<br>
 				{{ form.groupaffiliation(size=64) }}<br>
 			</p>
 			<p>Need to create a new group?  <a href="{{ url_for('groupregister') }}">Click to Register!</a></p>
->>>>>>> labpals_AGE
 			<p>
 				{{ form.username.label }}<br>
 				{{ form.username(size=32) }}<br>
