@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="container-sm m-5 p-3">
+		<h1>Group Registration</h1>
+		<form action="" method="post">
+			{{ form.hidden_tag() }}
+			<p>
+				{{ form.groupname.label }}<br>
+				{{ form.groupname(size=64) }}<br>
+				{% for error in form.groupname.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.researchcenter.label }}<br>
+				{{ form.researchcenter(size=64) }}<br>
+				{% for error in form.researchcenter.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.researchfield.label }}<br>
+				{{ form.researchfield(size=64) }}<br>
+				{% for error in form.researchfield.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.email.label }}<br>
+				{{ form.email(size=64) }}<br>
+				{% for error in form.email.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.location.label }}<br>
+				{{ form.location(size=64) }}<br>
+				{% for error in form.location.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>
+				{{ form.website.label }}<br>
+				{{ form.website(size=64) }}<br>
+				{% for error in form.website.errors %}
+				<span style="color: red;">[{{ error }}]</span>
+				{% endfor %}
+			</p>
+			<p>{{ form.submit() }}</p>
+		</form>
+	</div>
+{% endblock %}

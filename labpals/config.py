@@ -12,3 +12,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['armandgonzalez1994@gmail.com']
+    ALLOWED_EXTENSIONS = set(['pdf'])
+    UPLOAD_FOLDER = os.path.join(basedir, 'labpals/uploads')
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+    ENTRIES_PER_PAGE = 10
