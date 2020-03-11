@@ -35,3 +35,7 @@ class EditProfileForm(FlaskForm):
 class UploadForm(FlaskForm):
     file = FileField('Upload File', validators=[FileRequired()])
     submit = SubmitField('Upload')
+
+class PublicSearch(FlaskForm):
+    search = StringField('Search', validators=[DataRequired()])
+    submit = SubmitField('Submit')

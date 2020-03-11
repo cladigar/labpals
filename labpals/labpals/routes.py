@@ -1,12 +1,13 @@
 import os
 from labpals import app, db
-from labpals.forms import LoginForm, RegistrationForm, EditProfileForm, UploadForm
+from labpals.forms import LoginForm, RegistrationForm, EditProfileForm, UploadForm, PublicSearch
 from flask import render_template, flash, redirect, url_for, request, send_from_directory
 from flask_login import current_user, login_user, login_required, logout_user
 from labpals.models import User, Result
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from labpals.functions import pubmed_search
 
 @app.route('/')
 @app.route('/index')
@@ -46,6 +47,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -127,3 +129,11 @@ def download_pdf(pdf_id):
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
+
+@app.route('/public', methods=['GET', 'POST'])
+def public():
+    form = PublicSearch()
+    if form.validate_on_submit():
+        pubmed_results = pubmed_search(form.search.data)
+        return render_template('results_search.html', title='Results', pubmed_results=pubmed_results)
+    return render_template('public_search.html', title='Public search', form=form)
