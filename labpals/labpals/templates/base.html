@@ -43,7 +43,7 @@
 				{% endif %}
 			</ul>
 			{% if g.search_form %}
-      <form class="navbar-form navbar-left" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}</div></form>
+      <form class="form-inline ml-auto" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}</div></form>
       {% endif %}
 		</nav>
 
