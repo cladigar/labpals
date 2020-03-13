@@ -5,6 +5,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from labpals.search import add_to_index, remove_from_index, query_index
 
+
 class SearchableMixin(object):
     @classmethod
     def search(cls, expression, page, per_page):
@@ -43,6 +44,7 @@ class SearchableMixin(object):
         for obj in cls.query:
             add_to_index(cls.__tablename__, obj)
 
+
 db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
 db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
 
@@ -50,10 +52,11 @@ db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
 def load_user(id):
     return User.query.get(int(id))
 
+
 class User(SearchableMixin, UserMixin, db.Model):
-    #Making able to search user's username by search bar
+    # Making able to search user's username by search bar
     __searchable__ = ['username']
-    #Defining
+    # Defining
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -61,9 +64,9 @@ class User(SearchableMixin, UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    #Linking user to corresponding group
+    # Linking user to corresponding group
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
-    #Making results from a user easily accesible by a SQLalchemy query
+    # Making results from a user easily accessible by a SQLalchemy query
     results = db.relationship('Result', backref='user', lazy='dynamic')
 
     def __repr__(self):
@@ -79,6 +82,7 @@ class User(SearchableMixin, UserMixin, db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
@@ -88,9 +92,10 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post {}>'.format(self.body)
 
+
 class Result(db.Model):
-    #Defining data attributes for the results class
-    #File content indexed as it is predicted most common search
+    # Defining data attributes for the results class
+    # File content indexed as it is predicted most common search
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(100))
     filetype = db.Column(db.String(45))
@@ -101,14 +106,15 @@ class Result(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    #Printing out the file type and date uploaded (used for python interpreter)
+    # Printing out the file type and date uploaded (used for python interpreter)
     def __repr__(self):
         return '<File Type {}>'.format(self.filetype)
         return '<Date Uploaded {}>'.format(self.date_upload)
 
+
 class Group(db.Model):
-    #Defining data attributes for group class
-    #Groupname indexed as it is prediceted most common search
+    # Defining data attributes for group class
+    # Groupname indexed as it is predicted most common search
     id = db.Column(db.Integer, primary_key=True)
     groupname = db.Column(db.String(255), index=True)
     location = db.Column(db.String(255))
@@ -116,7 +122,7 @@ class Group(db.Model):
     website = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    #Printing out the name and location of the group (used for python interpreter)
+    # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
-        return '<User {}>'.format(self.groupname)
+        return '<Group {}>'.format(self.groupname)
         return '<Location {}>'.format(self.location)

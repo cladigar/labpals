@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 		{% if title %}
 		<title>{{ title }} - Labpals</title>
 		{% else %}
@@ -9,26 +9,26 @@
 		{% endif %}
 		<!-- Latest bootstrap compiled and minified -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-		<!-- Stylesheet for making the datables prettier -->
-		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
 		<!-- Javascript Script for making the time more eye-friendly -->
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-		<!-- Scripts for making the datatables more pretty -->
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-		<script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-		<script src="https://code.jquery.com/jquery-2.2.0.min.js" integrity="sha256-ihAoc6M/JPfrIiIeayPE9xjin4UWjsx2mjW/rtmxLM4=" crossorigin="anonymous"></script>
+		<!-- Scripts and stylesheets for making the datatables more pretty -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <!-- Include icons in the html templates -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 
 	<body class="bg-light">
 
 
 		<!--Header-->
-		<div class="jumbotron jumbotron-fluid text-center bg-secondary text-white" style="margin-bottom:0">
-      <div class="container">
-        <h1 class="display-4">LabPals</h1>
-        <p>Researchers assemble</p>
-      </div>
-    </div>
+        <div class="jumbotron jumbotron-fluid text-center bg-secondary text-white" style="margin-bottom:0">
+            <div class="container">
+                <h1 class="display-4">LabPals</h1>
+                <p>Researchers assemble</p>
+            </div>
+        </div>
 
 		<!--Navbar-->
 		<nav class="navbar navbar-expand-sm bg-light navbar-light border border-dark">
@@ -44,9 +44,8 @@
 				{% endif %}
 			</ul>
 			{% if g.search_form %}
-      <form class="form-inline ml-auto" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder=g.search_form.q.label.text) }}</div></form>
-      {% endif %}
-
+                <form class="form-inline ml-auto" method="get" action="{{ url_for('search') }}"><div class="form-group">{{ g.search_form.q(size=20, class='form-control', placeholder='Search user, group...') }}</div></form>
+            {% endif %}
 		</nav>
 
 		<!--Warning messages-->
@@ -57,8 +56,9 @@
 			{% endfor %}
 		{% endif %}
 		{% endwith %}
-
+    <div class= "container">
 		{% block content %}{% endblock %}
+    </div>
 
 
 	</body>

@@ -1,15 +1,18 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField, FileField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
-from flask_wtf.file import FileRequired
+from flask_wtf.file import FileRequired, FileAllowed
 from labpals.models import User, Group
 from flask import request
+from labpals import app
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
+
 
 class UserRegistrationForm(FlaskForm):
     groupaffiliation= StringField('Group Affiliation')
@@ -29,14 +32,21 @@ class UserRegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different email address.')
 
+
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
     submit = SubmitField('Submit')
 
+
 class UploadForm(FlaskForm):
-    file = FileField('Upload File', validators=[FileRequired()])
+    extensions = app.config['ALLOWED_EXTENSIONS']
+    file = FileField('Upload File', validators=[FileRequired(), FileAllowed(extensions,
+                                                                            "The file extension isn't supported "
+                                                                            "currently. Allowed extensions include "
+                                                                            + str(extensions))])
     submit = SubmitField('Upload')
+
 
 class SearchForm(FlaskForm):
     q = StringField('Search', validators=[DataRequired()])
@@ -47,6 +57,7 @@ class SearchForm(FlaskForm):
         if 'csrf_enabled' not in kwargs:
             kwargs['csrf_enabled'] = False
         super(SearchForm, self).__init__(*args, **kwargs)
+
 
 class GroupRegistrationForm(FlaskForm):
     groupname = StringField('Group Name', validators=[DataRequired()])

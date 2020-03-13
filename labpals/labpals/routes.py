@@ -8,12 +8,14 @@ from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 from datetime import datetime
 
+
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
         g.search_form = SearchForm()
+
 
 @app.route('/')
 @app.route('/index')
@@ -36,6 +38,7 @@ def index():
     ]
     return render_template('index.html', title='Home Page', group=group, posts=posts)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -53,10 +56,12 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -72,15 +77,13 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
-    return render_template('user.html', user=user, posts=posts)
+    return render_template('user.html', user=user)
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
@@ -97,8 +100,10 @@ def edit_profile():
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
 
+
 def allowed_file(filename):
     return '.' in filename and filename.lower().rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
@@ -109,15 +114,23 @@ def upload():
         if allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        name, extension = os.path.splitext(filename)
-        result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], filename), group_id='none_yet', user_id=current_user.id)
-        db.session.add(result)
-        db.session.commit()
-        flash('The file has been succesfully uploaded')
-        return redirect(url_for('upload'))
+            name, extension = os.path.splitext(filename)
+            if db.session.query(Result.query.filter(Result.filename == name).exists()).scalar():
+                result = db.session.query(Result).filter(Result.filename == name).one()
+                result.date_modif = datetime.utcnow()
+                db.session.commit()
+                flash('The file has been successfully updated')
+                return redirect(url_for('upload'))
+            else:
+                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], filename), user_id=current_user.id)
+                db.session.add(result)
+                db.session.commit()
+                flash('The file has been successfully uploaded')
+                return redirect(url_for('upload'))
     if form.errors:
         flash(form.errors, 'Danger')
     return render_template('upload.html', title="Upload File", form=form)
+
 
 @app.route('/files')
 @login_required
@@ -126,23 +139,36 @@ def show_files():
     files = user.results.all()
     return render_template('files.html', title="Existent Files", files=files)
 
-@app.route('/files/<pdf_id>')
+
+@app.route('/files/<file_name><file_extension>')
 @login_required
-def download_pdf(pdf_id):
-    filename = f'{pdf_id}.pdf'
+def download_file(file_name, file_extension):
+    filename = f'{file_name}{file_extension}'
     try:
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
 
-@app.route('/files/view/<pdf_id>')
+
+@app.route('/files/view/<file_name><file_extension>')
 @login_required
-def view_pdf(pdf_id):
-    filename = f'{pdf_id}.pdf'
+def view_file(file_name, file_extension):
+    filename = f'{file_name}{file_extension}'
     try:
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)
+
+@app.route('/delete_file/<file_id>', methods=['GET', 'POST'])
+@login_required
+def delete_file(file_id):
+    file = Result.query.get(file_id)
+    filename = file.filename + file.filetype
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    db.session.delete(file)
+    db.session.commit()
+    return redirect(url_for('show_files'))
+
 
 @app.route('/search')
 @login_required
@@ -158,6 +184,7 @@ def search():
         if page > 1 else None
     return render_template('search.html', title='Search', users=users,
                            next_url=next_url, prev_url=prev_url)
+
 
 @app.route('/groupregister', methods=['GET', 'POST'])
 def groupregister():

@@ -15,16 +15,8 @@
 	<div class="container clearfix m-5">
 		<img class="float-left mr-5" src="{{ user.avatar(128) }}">
 		<h1>{{ user.username }}</h1>
-		{% if user.about_me %}<p>{{ user.about_me }}</p>{% endif%}
+		{% if user.about_me %}<p>{{ user.about_me }}</p>{% else %}<p>[Write something about your here!!]</p>{% endif%}
 		{% if user.last_seen %}<p>Last seen on: {{ momentjs(user.last_seen).format('LL') }}</p>{% endif %}
-	</div>
-	<hr>
-	<br>
-	<div class="container-fluid ml-4">
-		{% for post in posts %}
-			{% include '_post.html' %}
-		<br>
-		{% endfor %}
 	</div>
 
 {% endblock %}

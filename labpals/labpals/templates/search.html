@@ -6,7 +6,7 @@
     <h1>{{ ('Search Results') }}</h1>
     <br>
     <br>
-    <table border="0" cellspacing="2" cellpadding="4" id="resultable">
+    <table class="hover row-border" id="resultable">
       <thead>
         <tr>
           <th>User</th>
@@ -15,19 +15,27 @@
           <th>Group</th>
         </tr>
       </thead>
-    {% for user in users %}
       <tbody>
-        <tr>
-          <td><a href="{{url_for('user', username=user.username) }}">{{ user.username }}</a></td>
-          <td>{{ user.email }}</td>
-          <td>{{ momentjs(user.last_seen).format('LL')}}</td>
-          <td>{{ user.group_id }}</td>
-        </tr>
+        {% for user in users %}
+            <tr>
+              <td><a href="{{url_for('user', username=user.username) }}">{{ user.username }}</a></td>
+              <td>{{ user.email }}</td>
+              <td>{{ momentjs(user.last_seen).format('LL')}}</td>
+              <td>{{ user.group_id }}</td>
+            </tr>
+        {% endfor %}
       </tbody>
-    {% endfor %}
+    </table>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#resultable').DataTable();
+        $('#resultable').DataTable( {
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'dt-center'
+                }
+            ]
+        });
     });
 </script>
 
