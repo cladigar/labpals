@@ -1,4 +1,5 @@
 import os
+import pathlib
 from labpals import app, db
 from labpals.forms import LoginForm, GroupRegistrationForm, EditProfileForm, UploadForm, SearchForm, UserRegistrationForm
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, g
@@ -111,18 +112,19 @@ def upload():
     form = UploadForm(csrf_enabled=False)
     if form.validate_on_submit():
         file = form.file.data
+        pathlib.Path(app.config['UPLOAD_FOLDER'], current_user.username).mkdir(exist_ok=True)
         if allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename))
             name, extension = os.path.splitext(filename)
-            if db.session.query(Result.query.filter(Result.filename == name).exists()).scalar():
-                result = db.session.query(Result).filter(Result.filename == name).one()
+            if db.session.query(Result.query.filter(Result.filename == name, Result.user_id == current_user.id).exists()).scalar():
+                result = db.session.query(Result).filter(Result.filename == name, Result.user_id == current_user.id).one()
                 result.date_modif = datetime.utcnow()
                 db.session.commit()
                 flash('The file has been successfully updated')
                 return redirect(url_for('upload'))
             else:
-                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], filename), user_id=current_user.id)
+                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename), user_id=current_user.id)
                 db.session.add(result)
                 db.session.commit()
                 flash('The file has been successfully uploaded')
@@ -144,8 +146,9 @@ def show_files():
 @login_required
 def download_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
+    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
     try:
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=True)
+        return send_from_directory(user_directory, filename=filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
 
@@ -154,8 +157,9 @@ def download_file(file_name, file_extension):
 @login_required
 def view_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
+    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
     try:
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename=filename, as_attachment=False)
+        return send_from_directory(user_directory, filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)
 
@@ -164,7 +168,7 @@ def view_file(file_name, file_extension):
 def delete_file(file_id):
     file = Result.query.get(file_id)
     filename = file.filename + file.filetype
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename))
     db.session.delete(file)
     db.session.commit()
     return redirect(url_for('show_files'))
