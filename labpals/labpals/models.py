@@ -62,15 +62,17 @@ class Result(db.Model):
 
 
 class Group(db.Model):
-    #Defining data attributes for group class
-    #Groupname indexed as it is prediceted most common search
-    idgroup = db.Column(db.Integer, primary_key=True)
-    groupname = db.Column(db.String(255), index=True)
+    # Defining data attributes for group class
+    # Groupname indexed as it is predicted most common search
+    id = db.Column(db.Integer, primary_key=True)
+    groupname = db.Column(db.String(255), index=True, unique=True)
     location = db.Column(db.String(255))
     email = db.Column(db.String(255))
     website = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.iduser'))
-    #Printing out the name and location of the group (used for python interpreter)
+    users = db.relationship('User', backref='useraffil', lazy='dynamic')
+
+
+
+    # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
-        return '<User {}>'.format(self.groupname)
-        return '<Location {}>'.format(self.location)
+        return '{}'.format(self.groupname)

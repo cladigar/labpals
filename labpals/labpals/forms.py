@@ -1,7 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
-from labpals.models import User
+from flask_wtf.file import FileRequired, FileAllowed
+from labpals.models import User, Group
+from flask import request
+from labpals import app
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+
+
+
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -9,7 +16,13 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
 
-class RegistrationForm(FlaskForm):
+
+def group_query():
+    return Group.query.filter_by(groupname=Group.groupname).all()
+
+class UserRegistrationForm(FlaskForm):
+    groupaffil = QuerySelectField('',query_factory = group_query, allow_blank=False)
+    groupaffiliation = StringField('Group Affiliation', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
