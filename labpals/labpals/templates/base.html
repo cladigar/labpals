@@ -21,7 +21,7 @@
 	<!-- Scripts and stylesheets for making the datatables more pretty -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" defer></script>
 	<!-- Include icons in the html templates -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	{% endblock %}
@@ -81,6 +81,6 @@
 			{% endwith %}
 
 			{% block app_content %}{% endblock %}
-	  </div>
+	     </div>
 	</div>
 {% endblock %}
