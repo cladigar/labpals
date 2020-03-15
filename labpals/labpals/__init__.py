@@ -7,8 +7,10 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from labpals import momentsjs
 from elasticsearch import Elasticsearch
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
+bootstrap = Bootstrap(app)
 app.config.from_object(Config)
 # Set jinja template global
 app.jinja_env.globals['momentjs'] = momentsjs.momentjs

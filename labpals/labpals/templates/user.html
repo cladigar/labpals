@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
 
 <!--Button to edit profile-->
 	{% if user == current_user %}
@@ -17,6 +17,7 @@
 		<h1>Hi, {{ user.username }}!</h1>
         <p>{{ user.email }}</p>
 		{% if user.about_me %}<p>{{ user.about_me }}</p>{% else %}<p>[Write something about your here!!]</p>{% endif%}
+		<br>
 		{% if user.last_seen %}<p>Last seen on: {{ momentjs(user.last_seen).format('LL') }}</p>{% endif %}
 	</div>
 

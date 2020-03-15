@@ -9,7 +9,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from .decorators import admin_required
-
+from labpals.functions import pubmed_search
 
 
 @app.before_request
@@ -19,8 +19,10 @@ def before_request():
         db.session.commit()
         g.search_form = SearchForm()
 
-
 @app.route('/')
+def welcome():
+    return render_template('welcome.html')
+
 @app.route('/index')
 @login_required
 def index():
@@ -191,8 +193,11 @@ def search():
         if total > page * app.config['ENTRIES_PER_PAGE'] else None
     prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
         if page > 1 else None
+    # Pubmed search
+    pubmed_results = pubmed_search(g.search_form.q.data)
     return render_template('search.html', title='Search', users=users,
-                           next_url=next_url, prev_url=prev_url)
+                           next_url=next_url, prev_url=prev_url,
+                           pubmed_results = pubmed_results)
 
 
 @app.route('/groupregister', methods=['GET', 'POST'])
@@ -282,6 +287,3 @@ def group_upload():
     if form.errors:
         flash(form.errors, 'Danger')
     return render_template('group_upload.html', title="Upload File", form=form, group=group)
-
-
-
