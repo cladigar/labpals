@@ -1,45 +1,16 @@
 {% extends "base.html" %}
 
-{% block content %}
-	<div class="container-sm m-5 p-3">
-		<h1>Register</h1>
-		<form action="" method="post">
-			{{ form.hidden_tag() }}
-			<p>Group name must match exact group name registered in the system.</p>
-			<p>
-				{{ form.groupaffiliation.label }}<br>
-				{{ form.groupaffiliation(size=64) }}<br>
-			</p>
-			<p>Need to create a new group?  <a href="{{ url_for('groupregister') }}">Click to Register!</a></p>
-			<p>
-				{{ form.username.label }}<br>
-				{{ form.username(size=32) }}<br>
-				{% for error in form.username.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</p>
-			<p>
-				{{ form.email.label }}<br>
-				{{ form.email(size=64) }}<br>
-				{% for error in form.email.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</p>
-			<p>
-				{{ form.password.label }}<br>
-				{{ form.password(size=32) }}<br>
-				{% for error in form.password.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</p>
-			<p>
-				{{ form.password2.label }}<br>
-				{{ form.password2(size=32) }}<br>
-				{% for error in form.password2.errors %}
-				<span style="color: red;">[{{ error }}]</span>
-				{% endfor %}
-			</p>
-			<p>{{ form.submit() }}</p>
-		</form>
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block app_content %}
+	<div class="container-sm p-3">
+		<h1 class="text-center">Register</h1>
+		<p class="text-center">Group name must match exact group name registered in the system.</p>
+		<div class="row">
+				<div class="col-md-4 mx-auto">
+						{{ wtf.quick_form(form) }}
+				</div>
+		</div>
+		<p class="text-center">Need to create a new group?  <a href="{{ url_for('groupregister') }}">Click to Register!</a></p>
 	</div>
 {% endblock %}

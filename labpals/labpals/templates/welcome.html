@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+  <header class="masthead text-center text-white rounded-lg">
+    <div class="masthead-content">
+      <div class="container">
+        <h1 class="masthead-heading mb-0">Labpals</h1>
+        <h2 class="masthead-subheading mb-0">Researchers assemble</h2>
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-xl rounded-pill mt-5">Sign up</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-xl rounded-pill mt-5">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='img/01.jpg') }}" alt="01">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">A scientific hub from scientists to scientists</h2>
+            <p>A center for sharing scientific knowledge and research between groups of professionals around the globe, making collaborations much easier.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='img/02.jpg') }}" alt="">
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="p-5">
+            <h2 class="display-4">Sharing files and results in your group made easy</h2>
+            <p>Being part of a group allows you to share files between the members of that group, an easy and useful way of sharing results, protocols and every other scientific stuff.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 order-lg-2">
+          <div class="p-5">
+            <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='img/03.jpg') }}" alt="">
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="p-5">
+            <h2 class="display-4">Know who is working on the same field as you</h2>
+            <p>You can search other groups working on the same field and ask for collaboration, results sharing or even a preview of their not-yet-reviewed articles.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
