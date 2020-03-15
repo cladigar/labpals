@@ -33,4 +33,5 @@ if not app.debug:
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
 
+
 from labpals import routes, models, errors, search

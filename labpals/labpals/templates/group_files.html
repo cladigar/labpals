@@ -1,0 +1,46 @@
+ {% extends "base.html" %}
+
+{% block content %}
+  <br>
+  <h1>Group files</h1>
+  <br>
+    <table id="resultable" class="hover row-border">
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Extension</th>
+                <th>User</th>
+                <th>Upload Date</th>
+                <th>Last Modification Date</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <td><a href="{{url_for('view_group_file', file_name = file.filename, file_extension = file.filetype ) }}">{{ file.filename }}</a></td>
+                <td>{{ file.filetype }}</td>
+                <td>{{ file.user_id }}</td>
+                <td>{{ momentjs(file.date_upload).format('LLL')}}</td>
+                <td>{{ momentjs(file.date_modif).format('LLL') }}</td>
+                <td><a href="{{url_for('download_group_file', file_name = file.filename, file_extension = file.filetype) }}"><i class="fa fa-download" aria-hidden="true"></i>
+</i></a></td>
+                <td><a href="{{url_for('delete_group_file', file_id = file.id) }}"><i class="fa fa-trash"></i></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+  </table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#resultable').DataTable( {
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'dt-center'
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

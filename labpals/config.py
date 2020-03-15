@@ -18,3 +18,4 @@ class Config(object):
     UPLOAD_FOLDER = os.path.join(basedir, 'labpals/uploads')
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     ENTRIES_PER_PAGE = 10
+    LABPALS_ADMIN = ['admin@hotmail.com']

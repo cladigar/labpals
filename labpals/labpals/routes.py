@@ -1,13 +1,15 @@
 import os
 import pathlib
 from labpals import app, db
-from labpals.forms import LoginForm, GroupRegistrationForm, EditProfileForm, UploadForm, SearchForm, UserRegistrationForm
+from .forms import LoginForm, GroupRegistrationForm, EditProfileForm, UploadForm, SearchForm, UserRegistrationForm
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, g
 from flask_login import current_user, login_user, login_required, logout_user
-from labpals.models import User, Result, Group
+from .models import User, Result, Group
 from werkzeug.urls import url_parse
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from datetime import datetime
+from .decorators import admin_required
+
 
 
 @app.before_request
@@ -112,10 +114,11 @@ def upload():
     form = UploadForm(csrf_enabled=False)
     if form.validate_on_submit():
         file = form.file.data
-        pathlib.Path(app.config['UPLOAD_FOLDER'], current_user.username).mkdir(exist_ok=True)
+        user_folder = os.path.join('users', current_user.username)
+        pathlib.Path(app.config['UPLOAD_FOLDER'], user_folder).mkdir(parents=True, exist_ok=True)
         if allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], user_folder, filename))
             name, extension = os.path.splitext(filename)
             if db.session.query(Result.query.filter(Result.filename == name, Result.user_id == current_user.id).exists()).scalar():
                 result = db.session.query(Result).filter(Result.filename == name, Result.user_id == current_user.id).one()
@@ -124,7 +127,7 @@ def upload():
                 flash('The file has been successfully updated')
                 return redirect(url_for('upload'))
             else:
-                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename), user_id=current_user.id)
+                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename), user_id=current_user.id, group_id=0)
                 db.session.add(result)
                 db.session.commit()
                 flash('The file has been successfully uploaded')
@@ -137,18 +140,18 @@ def upload():
 @app.route('/files')
 @login_required
 def show_files():
-    user = User.query.get(current_user.id)
-    files = user.results.all()
-    return render_template('files.html', title="Existent Files", files=files)
+    files = db.session.query(Result).join(User).filter(User.id == current_user.id).filter(Result.group_id == 0).all()
+    return render_template('files.html', title="Your Files", files=files)
 
 
 @app.route('/files/<file_name><file_extension>')
 @login_required
 def download_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
-    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+    user_folder = os.path.join('users', current_user.username)
+    user_file_path = os.path.join(app.config['UPLOAD_FOLDER'], user_folder)
     try:
-        return send_from_directory(user_directory, filename=filename, as_attachment=True)
+        return send_from_directory(user_file_path, filename=filename, as_attachment=True)
     except FileNotFoundError:
         abort(404)
 
@@ -157,9 +160,10 @@ def download_file(file_name, file_extension):
 @login_required
 def view_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
-    user_directory = os.path.join(app.config['UPLOAD_FOLDER'], current_user.username)
+    user_folder = os.path.join('users', current_user.username)
+    user_file_path = os.path.join(app.config['UPLOAD_FOLDER'], user_folder)
     try:
-        return send_from_directory(user_directory, filename=filename, as_attachment=False)
+        return send_from_directory(user_file_path, filename=filename, as_attachment=False)
     except FileNotFoundError:
         abort(404)
 
@@ -168,7 +172,8 @@ def view_file(file_name, file_extension):
 def delete_file(file_id):
     file = Result.query.get(file_id)
     filename = file.filename + file.filetype
-    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], current_user.username, filename))
+    user_folder = os.path.join('users', current_user.username)
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], user_folder, filename))
     db.session.delete(file)
     db.session.commit()
     return redirect(url_for('show_files'))
@@ -200,3 +205,83 @@ def groupregister():
         flash('Congratulations, you have registered your group!')
         return redirect(url_for('register'))
     return render_template('groupregister.html', title='Group Register', form=form)
+
+
+@app.route('/group/files')
+@login_required
+def show_group_files():
+    group = Group.query.get(1)
+    files = group.results.all()
+    return render_template('group_files.html', title="Group Files", files=files)
+
+
+@app.route('/group/files/<file_name><file_extension>')
+@login_required
+def download_group_file(file_name, file_extension):
+    filename = f'{file_name}{file_extension}'
+    group = Group.query.get(1)
+    group_folder = os.path.join('groups', group.groupname)
+    group_file_path = os.path.join(app.config['UPLOAD_FOLDER'], group_folder)
+    try:
+        return send_from_directory(group_file_path, filename=filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
+@app.route('/group/files/view/<file_name><file_extension>')
+@login_required
+def view_group_file(file_name, file_extension):
+    filename = f'{file_name}{file_extension}'
+    group = Group.query.get(1)
+    group_folder = os.path.join('groups', group.groupname)
+    group_file_path = os.path.join(app.config['UPLOAD_FOLDER'], group_folder)
+    try:
+        return send_from_directory(group_file_path, filename=filename, as_attachment=False)
+    except FileNotFoundError:
+        abort(404)
+
+
+@app.route('/group/delete_file/<file_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def delete_group_file(file_id):
+    group = Group.query.get(1)
+    file = Result.query.get(file_id)
+    filename = file.filename + file.filetype
+    group_folder = os.path.join('groups', group.groupname)
+    os.remove(os.path.join(app.config['UPLOAD_FOLDER'], group_folder, filename))
+    db.session.delete(file)
+    db.session.commit()
+    return redirect(url_for('show_group_files'))
+
+
+@app.route('/group/upload', methods=['GET', 'POST'])
+@login_required
+def group_upload():
+    form = UploadForm(csrf_enabled=False)
+    group = Group.query.get(1)
+    if form.validate_on_submit():
+        file = form.file.data
+        group_folder = os.path.join('groups', group.groupname)
+        pathlib.Path(app.config['UPLOAD_FOLDER'], group_folder).mkdir(parents=True, exist_ok=True)
+        if allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], group_folder, filename))
+            name, extension = os.path.splitext(filename)
+            if db.session.query(Result.query.filter(Result.filename == name, Result.group_id == group.id).exists()).scalar():
+                result = db.session.query(Result).filter(Result.filename == name, Result.group.id == group.id).one()
+                result.date_modif = datetime.utcnow()
+                db.session.commit()
+                flash('The file has been successfully updated')
+                return redirect(url_for('group_upload'))
+            else:
+                result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], group_folder, filename), user_id=current_user.id, group_id=group.id)
+                db.session.add(result)
+                db.session.commit()
+                flash('The file has been successfully uploaded')
+                return redirect(url_for('group_upload'))
+    if form.errors:
+        flash(form.errors, 'Danger')
+    return render_template('group_upload.html', title="Upload File", form=form, group=group)
+
+
+

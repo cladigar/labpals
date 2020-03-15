@@ -1,3 +1,4 @@
+from labpals import app
 from hashlib import md5
 from labpals import login, db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -59,6 +60,7 @@ class User(SearchableMixin, UserMixin, db.Model):
     # Defining
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
@@ -68,6 +70,14 @@ class User(SearchableMixin, UserMixin, db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     # Making results from a user easily accessible by a SQLalchemy query
     results = db.relationship('Result', backref='user', lazy='dynamic')
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email in app.config['LABPALS_ADMIN']:
+                self.role = Role.query.filter_by(name='Administrator').first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -81,6 +91,12 @@ class User(SearchableMixin, UserMixin, db.Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+
+    def can(self, perm):
+        return self.role is not None and self.role.has_permission(perm)
+
+    def is_administrator(self):
+        return self.can(Permission.ADMIN)
 
 
 class Post(db.Model):
@@ -121,8 +137,62 @@ class Group(db.Model):
     email = db.Column(db.String(255))
     website = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    results = db.relationship('Result', backref='group', lazy='dynamic')
 
     # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
         return '<Group {}>'.format(self.groupname)
         return '<Location {}>'.format(self.location)
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    default = db.Column(db.Boolean, default=False, index=True)
+    permissions = db.Column(db.Integer)
+    users = db.relationship('User', backref='role', lazy='dynamic')
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+            'User': [Permission.UPLOAD],
+            'Administrator': [Permission.UPLOAD, Permission.DELETE, Permission.ADMIN],
+        }
+        default_role = 'User'
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.reset_permissions()
+            for perm in roles[r]:
+                role.add_permission(perm)
+            role.default = (role.name == default_role)
+            db.session.add(role)
+        db.session.commit()
+
+    def __init__(self, **kwargs):
+        super(Role, self).__init__(**kwargs)
+        if self.permissions is None:
+            self.permissions = 0
+
+    def add_permission(self, perm):
+        if not self.has_permission(perm):
+            self.permissions += perm
+
+    def remove_permission(self, perm):
+        if self.has_permission(perm):
+            self.permissions -= perm
+
+    def reset_permissions(self):
+        self.permissions = 0
+
+    def has_permission(self, perm):
+        return self.permissions & perm == perm
+
+
+class Permission:
+    UPLOAD = 1
+    DELETE = 2
+    ADMIN = 4
+

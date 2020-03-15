@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <br>
+    <br>
+    <h1>Forbidden: Only an admin can delete files from the group</h1>
+    <p><a href="{{ url_for('show_group_files') }}">Back</a></p>
+{% endblock %}
