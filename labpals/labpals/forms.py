@@ -62,7 +62,7 @@ class SearchForm(FlaskForm):
 class GroupRegistrationForm(FlaskForm):
     groupname = StringField('Group Name', validators=[DataRequired()])
     researchcenter = StringField('Affiliated Research Center (University, etc.)', validators=[DataRequired()])
-    researchfield = StringField('Field of Research', validators=[DataRequired()])
+    researchfield = TextAreaField('Field of Research (comma separated: cancer,diabetes,immunity etc.)', validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     website = StringField('Website')

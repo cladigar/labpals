@@ -3,7 +3,6 @@ from xml.etree import ElementTree
 
 ### Pubmed search
 # Getting pubmed articles IDs
-
 def pubmed_search(search):
 
     parameters_id = {
@@ -27,7 +26,6 @@ def pubmed_search(search):
     ids_as_string = ",".join(ids)
 
     # Getting pubmed information from articles IDs
-
     parameters_fetch = {
         "tool": "MyTool",
         "email":" MyEmail",
@@ -41,7 +39,6 @@ def pubmed_search(search):
     tree_fetch = ElementTree.fromstring(response_fetch.content)
 
     # Extracting information from the summary XML
-
     pubmed_results = []
     for article in tree_fetch.findall("DocSum"):
         id = article.find("Id").text
@@ -49,15 +46,18 @@ def pubmed_search(search):
         authors = []
         for author in article.findall('./Item[@Name="AuthorList"]/Item[@Name="Author"]'):
             authors.append(author.text)
-        authors_as_string = ",".join(authors)
+        authors_as_string = ", ".join(authors)
         title = article.find('Item[@Name="Title"]').text
-        type = article.find('./Item[@Name="PubTypeList"]/Item[@Name="PubType"]').text
-        if type == "Journal Article":
+        if article.find('./Item[@Name="PubTypeList"]/Item[@Name="PubType"]') != None:
+            type = article.find('./Item[@Name="PubTypeList"]/Item[@Name="PubType"]').text
+        else:
+            type = "-"
+        if article.find('Item[@Name="DOI"]') != None:
             doi = article.find('Item[@Name="DOI"]').text
         else:
             doi = "-"
         # Appending to list
-        pubmed_results.append({"id": id, "date": date, "authors": authors, "title": title, "type": type, "doi": doi})
+        pubmed_results.append({"id": id, "date": date, "authors": authors_as_string, "title": title, "type": type, "doi": doi})
 
     return pubmed_results
 
