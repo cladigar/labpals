@@ -4,7 +4,7 @@ from labpals import app, db#, pusher_client
 from .forms import LoginForm, GroupRegistrationForm, EditProfileForm, UploadForm, SearchForm, UserRegistrationForm
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, g
 from flask_login import current_user, login_user, login_required, logout_user
-from .models import User, Result, Group
+from .models import User, Result, Group, ResearchField
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -194,6 +194,10 @@ def groupregister():
     form = GroupRegistrationForm()
     if form.validate_on_submit():
         group = Group(groupname=form.groupname.data, email=form.email.data, location=form.location.data, website=form.website.data)
+        researchfields = form.researchfield.data.split(",")
+        for field in researchfields:
+             field_entry = ResearchField(researchfield=field, group=group)
+             db.session.add(field_entry)
         db.session.add(group)
         db.session.commit()
         flash('Congratulations, you have registered your group!')

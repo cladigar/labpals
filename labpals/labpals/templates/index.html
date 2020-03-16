@@ -18,9 +18,11 @@
 			</div>
 			<div class="col-sm-8">
 				<div class="container" style="border-radius:10px">
+					<ul>
                     {% for result in results %}
-					    <p class="font-weight-bold">{{ result.user.username }} added {{ result.filename }}{{ result.filetype }} on {{ momentjs(result.date_upload).format('LLL')}} and modified at {{ momentjs(result.date_modif).format('LLL')}} </p>
+					    <li><p class="font-weight-bold">{{ result.user.username }} added {{ result.filename }}{{ result.filetype }} on {{ momentjs(result.date_upload).format('LLL')}} and modified at {{ momentjs(result.date_modif).format('LLL')}} </p></li>
                     {% endfor %}
+					</ul>
 				</div>
 			</div>
 		</div>

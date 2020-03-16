@@ -138,11 +138,25 @@ class Group(db.Model):
     website = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     results = db.relationship('Result', backref='group', lazy='dynamic')
+    researchfields = db.relationship('ResearchField', backref='group', lazy='dynamic')
 
     # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
         return '<Group {}>'.format(self.groupname)
         return '<Location {}>'.format(self.location)
+
+
+class ResearchField(db.Model):
+    # Defining data attributes for field class
+    # Field indexed as it is predicted most common search
+    id = db.Column(db.Integer, primary_key=True)
+    researchfield = db.Column(db.String(255), index=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+
+    # Printing out the research field (used for python interpreter)
+    def __repr__(self):
+        return '<Research field {}>'.format(self.researchfield)
+
 
 
 class Role(db.Model):
