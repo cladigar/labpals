@@ -5,6 +5,7 @@ from flask_wtf.file import FileRequired, FileAllowed
 from labpals.models import User, Group
 from flask import request
 from labpals import app
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 
 
 class LoginForm(FlaskForm):
@@ -13,9 +14,12 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
 
+def group_query():
+    return Group.query.filter_by(groupname=Group.groupname).all()
+
 
 class UserRegistrationForm(FlaskForm):
-    groupaffiliation= StringField('Group Affiliation')
+    groupaffil = QuerySelectField('',query_factory = group_query, allow_blank=False)
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -61,7 +65,7 @@ class SearchForm(FlaskForm):
 
 class GroupRegistrationForm(FlaskForm):
     groupname = StringField('Group Name', validators=[DataRequired()])
-    researchcenter = StringField('Affiliated Research Center (University, etc.)', validators=[DataRequired()])
+    center = StringField('Affiliated Research Center (University, etc.)', validators=[DataRequired()])
     researchfield = TextAreaField('Field of Research (comma separated: cancer,diabetes,immunity etc.)', validators=[DataRequired()])
     location = StringField('Location', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])

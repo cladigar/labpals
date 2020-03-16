@@ -59,7 +59,7 @@ class User(SearchableMixin, UserMixin, db.Model):
     __searchable__ = ['username']
     # Defining
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -132,18 +132,20 @@ class Group(db.Model):
     # Defining data attributes for group class
     # Groupname indexed as it is predicted most common search
     id = db.Column(db.Integer, primary_key=True)
-    groupname = db.Column(db.String(255), index=True)
+    groupname = db.Column(db.String(255), index=True, unique=True)
+    center = db.Column(db.String(255))
     location = db.Column(db.String(255))
     email = db.Column(db.String(255))
     website = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    users = db.relationship('User', backref='useraffil', lazy='dynamic')
     results = db.relationship('Result', backref='group', lazy='dynamic')
     researchfields = db.relationship('ResearchField', backref='group', lazy='dynamic')
 
     # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
-        return '<Group {}>'.format(self.groupname)
+        return '<User {}>'.format(self.groupname)
         return '<Location {}>'.format(self.location)
+        return '{}'.format(self.groupname)
 
 
 class ResearchField(db.Model):
@@ -209,4 +211,3 @@ class Permission:
     UPLOAD = 1
     DELETE = 2
     ADMIN = 4
-

@@ -23,12 +23,13 @@ def before_request():
 def welcome():
     return render_template('welcome.html')
 
+
 @app.route('/index')
 @login_required
 def index():
     group_id = current_user.group_id
-    group = Group.query.get(1) # Should be changed with group id
-    results = db.session.query(Result).filter(Result.group_id == group.id).order_by(Result.date_modif.desc())
+    group = Group.query.get(group_id)
+    results = db.session.query(Result).filter(Result.group_id == group_id).order_by(Result.date_modif.desc())
     return render_template('index.html', title='Home Page', group=group, results=results)
 
 
@@ -62,7 +63,7 @@ def register():
         return redirect(url_for('index'))
     form = UserRegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, useraffil = form.groupaffil.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -92,6 +93,41 @@ def edit_profile():
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+
+@app.route('/edit_groupprofile', methods=['GET', 'POST'])
+@login_required
+def edit_groupprofile():
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
+    researchfields_query = ResearchField.query.filter_by(group_id=group_id).all()
+    form = GroupRegistrationForm()
+    if form.validate_on_submit():
+        group.groupname = form.groupname.data
+        group.center = form.center.data
+        group.email = form.email.data
+        group.location = form.location.data
+        group.website = form.website.data
+        for field in researchfields_query:
+            db.session.delete(field)
+        new_researchfields = form.researchfield.data.split(",")
+        for field in new_researchfields:
+             field_entry = ResearchField(researchfield=field, group=group)
+             db.session.add(field_entry)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('index'))
+    elif request.method == 'GET':
+        display_researchfields = []
+        for field in researchfields_query:
+            display_researchfields.append(field.researchfield)
+        form.groupname.data=group.groupname
+        form.center.data=group.center
+        form.email.data=group.email
+        form.location.data=group.location
+        form.website.data=group.website
+        form.researchfield.data = ",".join(display_researchfields)
+    return render_template('edit_groupprofile.html', title='Edit Group Profile', form=form)
 
 
 def allowed_file(filename):
@@ -193,7 +229,7 @@ def search():
 def groupregister():
     form = GroupRegistrationForm()
     if form.validate_on_submit():
-        group = Group(groupname=form.groupname.data, email=form.email.data, location=form.location.data, website=form.website.data)
+        group = Group(groupname=form.groupname.data, center=form.center.data, email=form.email.data, location=form.location.data, website=form.website.data)
         researchfields = form.researchfield.data.split(",")
         for field in researchfields:
              field_entry = ResearchField(researchfield=field, group=group)
@@ -208,7 +244,8 @@ def groupregister():
 @app.route('/group/files')
 @login_required
 def show_group_files():
-    group = Group.query.get(1)
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
     files = group.results.all()
     return render_template('group_files.html', title="Group Files", files=files)
 
@@ -217,7 +254,8 @@ def show_group_files():
 @login_required
 def download_group_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
-    group = Group.query.get(1)
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
     group_folder = os.path.join('groups', group.groupname)
     group_file_path = os.path.join(app.config['UPLOAD_FOLDER'], group_folder)
     try:
@@ -229,7 +267,8 @@ def download_group_file(file_name, file_extension):
 @login_required
 def view_group_file(file_name, file_extension):
     filename = f'{file_name}{file_extension}'
-    group = Group.query.get(1)
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
     group_folder = os.path.join('groups', group.groupname)
     group_file_path = os.path.join(app.config['UPLOAD_FOLDER'], group_folder)
     try:
@@ -242,7 +281,8 @@ def view_group_file(file_name, file_extension):
 @login_required
 @admin_required
 def delete_group_file(file_id):
-    group = Group.query.get(1)
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
     file = Result.query.get(file_id)
     filename = file.filename + file.filetype
     group_folder = os.path.join('groups', group.groupname)
@@ -256,7 +296,8 @@ def delete_group_file(file_id):
 @login_required
 def group_upload():
     form = UploadForm(csrf_enabled=False)
-    group = Group.query.get(1)
+    group_id = current_user.group_id
+    group = Group.query.get(group_id)
     if form.validate_on_submit():
         file = form.file.data
         group_folder = os.path.join('groups', group.groupname)

@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<!--Button to edit profile-->
+<div class="float-right m-5">
+	<button type="button" class="btn btn-outline-secondary">
+		<a href="{{ url_for('edit_groupprofile') }}">Edit group profile</a>
+	</button>
+</div>
 <!--Header for the group-->
 	<div class="container text-center">
 		<h1 class="display-3 p-5">{{ group.groupname }}</h1>

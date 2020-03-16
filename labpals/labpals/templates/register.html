@@ -13,4 +13,13 @@
 		</div>
 		<p class="text-center">Need to create a new group?  <a href="{{ url_for('groupregister') }}">Click to Register!</a></p>
 	</div>
+	<div>
+		{% for error in form.username.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+		<br>
+		{% for error in form.email.errors %}
+		<span style="color: red;">[{{ error }}]</span>
+		{% endfor %}
+	</div>
 {% endblock %}
