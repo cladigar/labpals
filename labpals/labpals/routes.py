@@ -19,6 +19,7 @@ def before_request():
         db.session.commit()
         g.search_form = SearchForm()
 
+
 @app.route('/')
 def welcome():
     return render_template('welcome.html')
@@ -54,7 +55,7 @@ def login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('welcome'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -210,19 +211,13 @@ def delete_file(file_id):
 def search():
     if not g.search_form.validate():
         return redirect(url_for('index'))
-    page = request.args.get('page', 1, type=int)
-    users, total = User.search(g.search_form.q.data, page,
-                               app.config['ENTRIES_PER_PAGE'])
-    next_url = url_for('main.search', q=g.search_form.q.data, page=page + 1) \
-        if total > page * app.config['ENTRIES_PER_PAGE'] else None
-    prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
-        if page > 1 else None
+    users, total_users = User.search(g.search_form.q.data)
+    groups, total_groups = Group.search(g.search_form.q.data)
+    fields, total_fields = ResearchField.search(g.search_form.q.data)
     pubmed_results = ""
     # Pubmed search
     pubmed_results = pubmed_search(g.search_form.q.data)
-    return render_template('search.html', title='Search', users=users,
-                           next_url=next_url, prev_url=prev_url,
-                           pubmed_results=pubmed_results)
+    return render_template('search.html', title='Search', users=users, groups=groups, fields=fields, pubmed_results=pubmed_results)
 
 
 @app.route('/groupregister', methods=['GET', 'POST'])

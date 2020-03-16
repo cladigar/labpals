@@ -9,8 +9,8 @@ from labpals.search import add_to_index, remove_from_index, query_index
 
 class SearchableMixin(object):
     @classmethod
-    def search(cls, expression, page, per_page):
-        ids, total = query_index(cls.__tablename__, expression, page, per_page)
+    def search(cls, expression):
+        ids, total = query_index(cls.__tablename__, expression)
         if total == 0:
             return cls.query.filter_by(id=0), 0
         when = []
@@ -48,6 +48,7 @@ class SearchableMixin(object):
 
 db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
 db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
+
 
 @login.user_loader
 def load_user(id):
@@ -128,9 +129,10 @@ class Result(db.Model):
         return '<Date Uploaded {}>'.format(self.date_upload)
 
 
-class Group(db.Model):
+class Group(SearchableMixin, db.Model):
     # Defining data attributes for group class
     # Groupname indexed as it is predicted most common search
+    __searchable__ = ['groupname', 'location']
     id = db.Column(db.Integer, primary_key=True)
     groupname = db.Column(db.String(255), index=True, unique=True)
     center = db.Column(db.String(255))
@@ -143,14 +145,15 @@ class Group(db.Model):
 
     # Printing out the name and location of the group (used for python interpreter)
     def __repr__(self):
-        return '<User {}>'.format(self.groupname)
+        return '{}'.format(self.groupname)
         return '<Location {}>'.format(self.location)
         return '{}'.format(self.groupname)
 
 
-class ResearchField(db.Model):
+class ResearchField(SearchableMixin, db.Model):
     # Defining data attributes for field class
     # Field indexed as it is predicted most common search
+    __searchable__ = ['researchfield']
     id = db.Column(db.Integer, primary_key=True)
     researchfield = db.Column(db.String(255), index=True)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))

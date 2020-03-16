@@ -2,30 +2,73 @@
 
 {% block app_content %}
 <!--Database results-->
-    <h1>{{ ('Database Results') }}</h1>
-    <table class="hover row-border" id="resultable">
+    {% if users|list|length %}
+            <h1>{{ ('User Results') }}</h1>
+            <table class="hover row-border" id="user_table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Contact</th>
+                  <th>Last seen</th>
+                  <th>Group</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                    <tr>
+                      <td><a href="{{url_for('user', username=user.username) }}">{{ user.username }}</a></td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ momentjs(user.last_seen).format('LL')}}</td>
+                      <td>{{ user.useraffil }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#user_table').DataTable( {
+                    columnDefs: [
+                        {
+                            targets: '_all',
+                            className: 'dt-center'
+                        }
+                    ]
+                });
+            });
+        </script>
+        <br>
+    {% endif %}
+    {% if groups|list|length %}
+    <h1>{{ ('Group Results') }}</h1>
+    <table class="hover row-border" id="group_table">
       <thead>
         <tr>
-          <th>User</th>
-          <th>Contact</th>
-          <th>Last seen</th>
           <th>Group</th>
+          <th>Center</th>
+          <th>Location</th>
+          <th>Email</th>
+          <th>Website</th>
+          <th>Users</th>
+          <th>Research Fields</th>
         </tr>
       </thead>
       <tbody>
-        {% for user in users %}
+        {% for group in groups %}
             <tr>
-              <td><a href="{{url_for('user', username=user.username) }}">{{ user.username }}</a></td>
-              <td>{{ user.email }}</td>
-              <td>{{ momentjs(user.last_seen).format('LL')}}</td>
-              <td>{{ user.group_id }}</td>
+              <td>{{ group.groupname }}</td>
+              <td>{{ group.center }}</td>
+              <td>{{ group.location }}</td>
+              <td>{{ group.email }}</td>
+              <td>{{ group.website }}</td>
+              <td>{% for user in group.users %}<a href="{{url_for('user', username=user.username)}}">{{ user.username }}</a><br>{% endfor %}</td>
+              <td>{% for research_field in group.researchfields %}{{ research_field.researchfield }}<br>{% endfor %}</td>
             </tr>
         {% endfor %}
       </tbody>
     </table>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#resultable').DataTable( {
+        $('#group_table').DataTable( {
             columnDefs: [
                 {
                     targets: '_all',
@@ -36,10 +79,42 @@
     });
 </script>
 <br>
+    {% endif %}
+    {% if fields|list|length %}
+    <h1>{{ ('Field Results') }}</h1>
+    <table class="hover row-border" id="field_table">
+      <thead>
+        <tr>
+          <th>Research Fields</th>
+          <th>Group</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for field in fields %}
+            <tr>
+              <td>{{ field.researchfield|capitalize }}</td>
+              <td>{{ field.group.groupname }}</td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#field_table').DataTable( {
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'dt-center'
+                }
+            ]
+        });
+    });
+</script>
+<br>
+    {% endif %}
 <!--Pubmed results-->
 <h1>Pubmed results</h1>
-<div class="container">
-  <table class="table table-striped">
+  <table class="hover row-border" id="pubmed_table">
     <thead>
       <tr>
         <th>Title</th>
@@ -60,5 +135,17 @@
       </tr>
   {% endfor %}
     </tbody>
-</div>
+  </table>
+  <script type="text/javascript">
+    $(document).ready(function () {
+        $('#pubmed_table').DataTable( {
+            columnDefs: [
+                {
+                    targets: '_all',
+                    className: 'dt-left'
+                }
+            ]
+        });
+    });
+</script>
 {% endblock %}

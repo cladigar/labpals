@@ -16,12 +16,9 @@ def remove_from_index(index, model):
     app.elasticsearch.delete(index=index, id=model.id)
 
 
-def query_index(index, query, page, per_page):
+def query_index(index, query):
     if not app.elasticsearch:
         return [], 0
-    search = app.elasticsearch.search(
-        index=index,
-        body={'query': {'multi_match': {'query': query, 'fields': ['*']}},
-              'from': (page - 1) * per_page, 'size': per_page})
+    search = app.elasticsearch.search(index=index, body={'query': {'multi_match': {'query': query, 'fields': ['*']}}})
     ids = [int(hit['_id']) for hit in search['hits']['hits']]
     return ids, search['hits']['total']['value']

@@ -10,7 +10,7 @@ def pubmed_search(search):
         "email":" MyEmail",
         "db": "pubmed",
         "retmode": "xml",
-        "retmax": 20,
+        "retmax": 100,
         "term": search
     }
 
