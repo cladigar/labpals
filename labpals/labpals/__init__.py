@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from labpals import momentsjs
 from elasticsearch import Elasticsearch
 from flask_bootstrap import Bootstrap
+# import pusher
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -34,6 +35,14 @@ if not app.debug:
                 credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
+# Realtime uploads
+# pusher_client = pusher.Pusher(
+#   app_id='963721',
+#   key='97bc56a1eb806d1e3cc9',
+#   secret='87f06f98f688bae03551',
+#   cluster='eu',
+#   ssl=True
+# )
 
 
 from labpals import routes, models, errors, search

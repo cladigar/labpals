@@ -18,8 +18,8 @@
         {% for file in files %}
             <tr>
                 <td><a href="{{url_for('view_group_file', file_name = file.filename, file_extension = file.filetype ) }}">{{ file.filename }}</a></td>
-                <td>{{ file.filetype }}</td>
-                <td>{{ file.user_id }}</td>
+                <td>{{ file.filetype[1:] }}</td>
+                <td>{{ file.user.username }}</td>
                 <td>{{ momentjs(file.date_upload).format('LLL')}}</td>
                 <td>{{ momentjs(file.date_modif).format('LLL') }}</td>
                 <td><a href="{{url_for('download_group_file', file_name = file.filename, file_extension = file.filetype) }}"><i class="fa fa-download" aria-hidden="true"></i>

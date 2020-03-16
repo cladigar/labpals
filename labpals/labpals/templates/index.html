@@ -1,22 +1,9 @@
 {% extends "base.html" %}
 
-	<!--
-	<h1>{{ group.name }}</h1>
-    <h2>Contact details:</h2>
-    <p><div><strong>Location: </strong>{{ group.location }}</div>
-    <div><strong>E-mail: </strong>{{ group.email }}</div>
-    <div><strong>Website: </strong>{{ group.website }}</div></p>
-
-	{% for post in posts %}
-	<div><p>{{ post.author.username }} added: <b>{{ post.body }}</b></p></div>
-	{% endfor %}
-
--->
-
 {% block app_content %}
 <!--Header for the group-->
 	<div class="container text-center">
-		<h1 class="display-3 p-5">Group name</h1>
+		<h1 class="display-3 p-5">{{ group.groupname }}</h1>
 	</div>
 <!--Content for the group-->
 	<div class="container">
@@ -24,15 +11,16 @@
 			<div class="col-sm-4">
 				<div class="container" style="border-radius:10px">
 					<h1 class="text-center">Contact details</h1>
-					<p class="font-weight-bold">Location:</p><p>Barcelona, Spain</p>
-					<p class="font-weight-bold">E-mail:</p><p>group01@gmail.com</p>
-					<p class="font-weight-bold">Website:</p><p>group01@labpals.com</p>
+					<p class="font-weight-bold">Location:</p><p>{{group.location|capitalize}}</p>
+					<p class="font-weight-bold">E-mail:</p><p>{{group.email}}</p>
+					<p class="font-weight-bold">Website:</p><p>{{group.website}}</p>
 				</div>
 			</div>
 			<div class="col-sm-8">
 				<div class="container" style="border-radius:10px">
-					<p>John added:</p><p class="font-weight-bold">Beautiful day in Barcelona!</p>
-					<p>Susan added:</p><p class="font-weight-bold">The Avengers movie was so cool!</p>
+                    {% for result in results %}
+					    <p class="font-weight-bold">{{ result.user.username }} added {{ result.filename }}{{ result.filetype }} on {{ momentjs(result.date_upload).format('LLL')}} and modified at {{ momentjs(result.date_modif).format('LLL')}} </p>
+                    {% endfor %}
 				</div>
 			</div>
 		</div>

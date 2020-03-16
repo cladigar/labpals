@@ -2,7 +2,7 @@
 
 {% block app_content %}
 <!--Database results-->
-    <h1>{{ ('Search Results') }}</h1>
+    <h1>{{ ('Database Results') }}</h1>
     <table class="hover row-border" id="resultable">
       <thead>
         <tr>
@@ -53,7 +53,7 @@
   {% for result in pubmed_results %}
       <tr>
         <td><a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ result.id }}">{{ result.title }}</a></td>
-        <td>{% for author in result.authors %} {{ author }}, {% endfor %}</td>
+        <td>{{result.authors}}</td>
         <td>{{result.type}}</td>
         <td>{{result.date}}</td>
         <td>{{result.doi}}</td>

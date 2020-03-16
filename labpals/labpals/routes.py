@@ -1,6 +1,6 @@
 import os
 import pathlib
-from labpals import app, db
+from labpals import app, db#, pusher_client
 from .forms import LoginForm, GroupRegistrationForm, EditProfileForm, UploadForm, SearchForm, UserRegistrationForm
 from flask import render_template, flash, redirect, url_for, request, send_from_directory, g
 from flask_login import current_user, login_user, login_required, logout_user
@@ -26,22 +26,10 @@ def welcome():
 @app.route('/index')
 @login_required
 def index():
-    user = {'username': 'Armand'}
-    group = {'name': 'Group01',
-            'location': 'Barcelona, Spain',
-            'email': 'group01@gmail.com',
-            'website': 'group01@labpals.com'}
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Barcelona'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template('index.html', title='Home Page', group=group, posts=posts)
+    group_id = current_user.group_id
+    group = Group.query.get(1) # Should be changed with group id
+    results = db.session.query(Result).filter(Result.group_id == group.id).order_by(Result.date_modif.desc())
+    return render_template('index.html', title='Home Page', group=group, results=results)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -193,11 +181,12 @@ def search():
         if total > page * app.config['ENTRIES_PER_PAGE'] else None
     prev_url = url_for('main.search', q=g.search_form.q.data, page=page - 1) \
         if page > 1 else None
+    pubmed_results = ""
     # Pubmed search
     pubmed_results = pubmed_search(g.search_form.q.data)
     return render_template('search.html', title='Search', users=users,
                            next_url=next_url, prev_url=prev_url,
-                           pubmed_results = pubmed_results)
+                           pubmed_results=pubmed_results)
 
 
 @app.route('/groupregister', methods=['GET', 'POST'])
@@ -273,10 +262,16 @@ def group_upload():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], group_folder, filename))
             name, extension = os.path.splitext(filename)
             if db.session.query(Result.query.filter(Result.filename == name, Result.group_id == group.id).exists()).scalar():
-                result = db.session.query(Result).filter(Result.filename == name, Result.group.id == group.id).one()
+                result = db.session.query(Result).filter(Result.filename == name, Result.group_id == group.id).one()
                 result.date_modif = datetime.utcnow()
                 db.session.commit()
                 flash('The file has been successfully updated')
+                # data = {
+                #     "username": current_user.username,
+                #     "filename": file.filename,
+                #     "time": datetime.utcnow()
+                #     }
+                # pusher_client.trigger('table', 'new-record', {'data': data })
                 return redirect(url_for('group_upload'))
             else:
                 result = Result(filename=name, filetype=extension, content=os.path.join(app.config['UPLOAD_FOLDER'], group_folder, filename), user_id=current_user.id, group_id=group.id)
